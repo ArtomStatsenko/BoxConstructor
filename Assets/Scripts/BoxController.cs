@@ -35,8 +35,7 @@ public sealed class BoxController
         }
 
         CreateBox();
-
-        SetTransparent(true);
+        SetGhost(true);
     }
 
     private void CreateBox()
@@ -56,7 +55,7 @@ public sealed class BoxController
         _zBorder = (_gridSize.z - _size.z) * 0.5f;
     }
 
-    public void SetTransparent(bool isSelected)
+    public void SetGhost(bool isSelected)
     {
         if (isSelected)
         {
@@ -104,7 +103,7 @@ public sealed class BoxController
 
             if (available && Input.GetMouseButtonDown(0))
             {
-                SetTransparent(false);
+                SetGhost(false);
                 _selectedBox = null;
             }
         }
@@ -125,7 +124,7 @@ public sealed class BoxController
                 _size = _selectedBox.Size;
                 _xBorder = (_gridSize.x - _size.x) * 0.5f;
                 _zBorder = (_gridSize.z - _size.z) * 0.5f;
-                SetTransparent(true);
+                SetGhost(true);
             }
         }
     }
