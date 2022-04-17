@@ -13,6 +13,7 @@ public sealed class BoxView : MonoBehaviour
     public Color GhostColor => _ghostColor;
     public LayerMask Layer => _layer;
     public bool IsCollised { get; private set; }
+    public bool IsRotated { get; set; } = false;
     public Vector3 Size { get; set; }
 
 

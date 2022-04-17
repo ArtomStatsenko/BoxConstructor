@@ -36,10 +36,12 @@ public sealed class Root : MonoBehaviour
     private void OnEnable()
     {
         _ui.OnCreateButtonClick += _boxController.StartPlacingBox;
+        _ui.OnRotateButtonClick += _boxController.RotateBox;
     }
 
     private void OnDisable()
     {
         _ui.OnCreateButtonClick -= _boxController.StartPlacingBox;
+        _ui.OnRotateButtonClick -= _boxController.RotateBox;
     }
 }

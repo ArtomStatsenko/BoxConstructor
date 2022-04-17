@@ -2,6 +2,8 @@
 
 public sealed class BoxController
 {
+    private const string FIRE_1 = "Fire1";
+
     private BoxModel _model;
     private BoxView _selectedBox;
     private BoxView _prefab;
@@ -15,7 +17,6 @@ public sealed class BoxController
     private float _zBorder;
     private float _step;
     private float _gap = 0.05f;
-    //private bool _isDrag;
 
     public BoxController(BoxModel model, BoxView prefab, float step, Vector3 gridSize, Camera camera)
     {
@@ -24,7 +25,6 @@ public sealed class BoxController
         _step = step;
         _gridSize = gridSize;
         _camera = camera;
-        //_isDrag = false;
     }
 
     public void StartPlacingBox()
@@ -51,8 +51,22 @@ public sealed class BoxController
         _selectedBox.Size = _size;
         box.transform.localScale = _size - Vector3.one * _gap;
         box.transform.position = box.transform.position.Change(y: _size.y * 0.5f);
-        _xBorder = (_gridSize.x - _size.x) * 0.5f;
-        _zBorder = (_gridSize.z - _size.z) * 0.5f;
+        box.IsRotated = false;
+        SetBorders();
+    }
+
+    private void SetBorders()
+    {
+        if (_selectedBox.IsRotated)
+        {
+            _xBorder = (_gridSize.x - _size.z) * 0.5f;
+            _zBorder = (_gridSize.z - _size.x) * 0.5f;
+        }
+        else
+        {
+            _xBorder = (_gridSize.x - _size.x) * 0.5f;
+            _zBorder = (_gridSize.z - _size.z) * 0.5f;
+        }
     }
 
     public void SetGhost(bool isSelected)
@@ -89,7 +103,11 @@ public sealed class BoxController
             Vector3 worldPosition = ray.GetPoint(position);
             float x = Mathf.Round(worldPosition.x / _step) * _step;
             float z = Mathf.Round(worldPosition.z / _step) * _step;
-            _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
+
+            if (Input.GetButton(FIRE_1))
+            {
+                _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
+            }
 
             bool available = true;
             if (x < -_xBorder || x > _xBorder || z < -_zBorder || z > _zBorder)
@@ -101,7 +119,7 @@ public sealed class BoxController
                 available = false;
             }
 
-            if (available && Input.GetMouseButtonDown(0))
+            if (available && Input.GetButtonUp(FIRE_1))
             {
                 SetGhost(false);
                 _selectedBox = null;
@@ -118,40 +136,31 @@ public sealed class BoxController
         {
             GameObject selectedBoxObject = hit.collider.gameObject;
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetButtonDown(FIRE_1))
             {
                 _selectedBox = selectedBoxObject.transform.GetComponent<BoxView>();
                 _size = _selectedBox.Size;
-                _xBorder = (_gridSize.x - _size.x) * 0.5f;
-                _zBorder = (_gridSize.z - _size.z) * 0.5f;
+                SetBorders();
                 SetGhost(true);
             }
         }
     }
 
-    //private void Update()
-    //{
-    //    if (_isDrag)
-    //    {
-    //        var mousePosition = Input.mousePosition;
-    //        var screenMousePosition = _camera.ScreenPointToRay(mousePosition);
+    public void RotateBox()
+    {
+        if (_selectedBox != null)
+        {
+            _selectedBox.transform.Rotate(0f, 90f, 0f);
+            _selectedBox.IsRotated = !_selectedBox.IsRotated;
+            SetBorders();
+        }
+    }
 
-    //        if (Physics.Raycast(screenMousePosition, out RaycastHit hit, 1000f, layer.value))
-    //        {
-    //            _selectedBox.transform.position = _selectedBox.transform.position.Change(x: hit.point.x, z: hit.point.z);
-    //        }
-    //    }
-    //}
-
-    //private void OnMouseDown()
-    //{
-    //    _isDrag = true;
-    //    SetTransparent(true);
-    //}
-
-    //private void OnMouseUp()
-    //{
-    //    _isDrag = false;
-    //    SetTransparent(true);
-    //}
+    public void DeleteBox()
+    {
+        if (_selectedBox != null)
+        {
+            //TODO Delete selectedBox
+        }
+    }
 }
