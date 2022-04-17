@@ -3,38 +3,26 @@ using UnityEngine;
 public sealed class BoxView : MonoBehaviour
 {
     [SerializeField]
-    private LayerMask layer;
+    private Renderer _renderer;
+    [SerializeField]
+    private Color _ghostColor = new Color(0.1f, 0.6f, 1f, 0.1f);
+    [SerializeField]
+    private LayerMask _layer;
 
-    private bool _isDrag;
-    private Camera _camera;
+    public Renderer Renderer => _renderer;
+    public Color GhostColor => _ghostColor;
+    public LayerMask Layer => _layer;
+    public bool IsCollised { get; private set; }
+    public Vector3 Size { get; set; }
 
-    private void Start()
+
+    private void OnTriggerStay(Collider other)
     {
-        _isDrag = false;
-        _camera = Camera.main;
+        IsCollised = true;
     }
 
-    private void Update()
+    private void OnTriggerExit(Collider other)
     {
-        if (_isDrag)
-        {
-            var mousePosition = Input.mousePosition;
-            var screenMousePosition = _camera.ScreenPointToRay(mousePosition);
-
-            if (Physics.Raycast(screenMousePosition, out RaycastHit hit, 1000f, layer.value))
-            {
-                transform.position = transform.position.Change(x: hit.point.x, z: hit.point.z);
-            }
-        }
-    }
-    
-    private void OnMouseDown()
-    {
-        _isDrag = true;
-    }
-
-    private void OnMouseUp()
-    {
-        _isDrag = false;
+        IsCollised = false;
     }
 }
