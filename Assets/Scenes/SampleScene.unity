@@ -319,7 +319,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _createButton: {fileID: 1566445242}
   _rotateButton: {fileID: 2001730642}
-  _deleteButton: {fileID: 0}
+  _deleteButton: {fileID: 1169219065}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
