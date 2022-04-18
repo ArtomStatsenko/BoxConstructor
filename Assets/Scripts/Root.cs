@@ -36,12 +36,14 @@ public sealed class Root : MonoBehaviour
     private void OnEnable()
     {
         _ui.OnCreateButtonClick += _boxController.StartPlacingBox;
-        _ui.OnRotateButtonClick += _boxController.RotateBox;
+        _ui.OnRotateButtonClick += _boxController.RotateSelectedBox;
+        _ui.OnDeleteButtonClick += _boxController.DeleteSelectedBox;
     }
 
     private void OnDisable()
     {
         _ui.OnCreateButtonClick -= _boxController.StartPlacingBox;
-        _ui.OnRotateButtonClick -= _boxController.RotateBox;
+        _ui.OnRotateButtonClick -= _boxController.RotateSelectedBox;
+        _ui.OnDeleteButtonClick -= _boxController.DeleteSelectedBox;
     }
 }

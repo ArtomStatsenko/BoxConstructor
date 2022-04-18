@@ -3,20 +3,21 @@
 public sealed class BoxController
 {
     private const string FIRE_1 = "Fire1";
+    private const float GAP = 0.05f;
 
     private BoxModel _model;
     private BoxView _selectedBox;
     private BoxView _prefab;
     private Camera _camera;
     private LayerMask _layer;
-    private Vector3 _size = Vector3.one;
     private Vector3 _gridSize;
+    private Vector3 _size;
     private Color _ghostColor;
     private Color _defaultColor;
     private float _xBorder;
     private float _zBorder;
     private float _step;
-    private float _gap = 0.05f;
+    private bool _isValidPosition;
 
     public BoxController(BoxModel model, BoxView prefab, float step, Vector3 gridSize, Camera camera)
     {
@@ -29,29 +30,22 @@ public sealed class BoxController
 
     public void StartPlacingBox()
     {
-        if (_selectedBox != null)
-        {
-            Object.Destroy(_selectedBox.gameObject);
-        }
-
-        CreateBox();
-        SetGhost(true);
+        DeleteSelectedBox();
+        CreateNewBox();
+        SetSelectedBoxGhost(true);
     }
 
-    private void CreateBox()
+    private void CreateNewBox()
     {
-        BoxView box = Object.Instantiate(_prefab);
-        _selectedBox = box;
-
+        _selectedBox = Object.Instantiate(_prefab);
         _ghostColor = _selectedBox.GhostColor;
         _defaultColor = _selectedBox.Renderer.material.color;
-        _layer = box.Layer;
-
+        _layer = _selectedBox.Layer;
         _size = _model.Size;
         _selectedBox.Size = _size;
-        box.transform.localScale = _size - Vector3.one * _gap;
-        box.transform.position = box.transform.position.Change(y: _size.y * 0.5f);
-        box.IsRotated = false;
+        _selectedBox.transform.localScale = _size - Vector3.one * GAP;
+        _selectedBox.transform.position = _selectedBox.transform.position.Change(y: _size.y * 0.5f);
+        _selectedBox.IsRotated = false;
         SetBorders();
     }
 
@@ -69,8 +63,13 @@ public sealed class BoxController
         }
     }
 
-    public void SetGhost(bool isSelected)
+    public void SetSelectedBoxGhost(bool isSelected)
     {
+        if (_selectedBox == null)
+        {
+            return;
+        }
+
         if (isSelected)
         {
             _selectedBox.Renderer.material.color = _ghostColor;
@@ -83,13 +82,36 @@ public sealed class BoxController
 
     public void Update()
     {
+        if (Input.GetButtonDown(FIRE_1))
+        {
+            _selectedBox = SelectBox();
+
+            if (_selectedBox == null)
+            {
+                CompleteEdit();
+            }
+        }
+
         if (_selectedBox != null)
         {
-            MoveBox();
+            if (Input.GetButton(FIRE_1))
+            {
+                MoveBox();
+            }
+            //if (_isValidPosition && Input.GetButtonUp(FIRE_1))
+            //{
+            //    SetGhost(false);
+            //    _selectedBox = null;
+            //}
         }
-        else
+    }
+
+    private void CompleteEdit()
+    {
+        if (_isValidPosition)
         {
-            SelectBox();
+            SetSelectedBoxGhost(false);
+            _selectedBox = null;
         }
     }
 
@@ -103,31 +125,21 @@ public sealed class BoxController
             Vector3 worldPosition = ray.GetPoint(position);
             float x = Mathf.Round(worldPosition.x / _step) * _step;
             float z = Mathf.Round(worldPosition.z / _step) * _step;
+            _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
 
-            if (Input.GetButton(FIRE_1))
-            {
-                _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
-            }
-
-            bool available = true;
+            _isValidPosition = true;
             if (x < -_xBorder || x > _xBorder || z < -_zBorder || z > _zBorder)
             {
-                available = false;
+                _isValidPosition = false;
             }
             if (_selectedBox.IsCollised)
             {
-                available = false;
-            }
-
-            if (available && Input.GetButtonUp(FIRE_1))
-            {
-                SetGhost(false);
-                _selectedBox = null;
+                _isValidPosition = false;
             }
         }
     }
 
-    private void SelectBox()
+    private BoxView SelectBox()
     {
         Vector3 mousePosition = Input.mousePosition;
         Ray ray = _camera.ScreenPointToRay(mousePosition);
@@ -135,18 +147,16 @@ public sealed class BoxController
         if (Physics.Raycast(ray, out RaycastHit hit, 1000f, _layer.value))
         {
             GameObject selectedBoxObject = hit.collider.gameObject;
-
-            if (Input.GetButtonDown(FIRE_1))
-            {
-                _selectedBox = selectedBoxObject.transform.GetComponent<BoxView>();
-                _size = _selectedBox.Size;
-                SetBorders();
-                SetGhost(true);
-            }
+            _size = _selectedBox.Size;
+            SetBorders();
+            SetSelectedBoxGhost(true);
+            return selectedBoxObject.transform.GetComponent<BoxView>();
         }
+
+        return null;
     }
 
-    public void RotateBox()
+    public void RotateSelectedBox()
     {
         if (_selectedBox != null)
         {
@@ -156,11 +166,12 @@ public sealed class BoxController
         }
     }
 
-    public void DeleteBox()
+    public void DeleteSelectedBox()
     {
         if (_selectedBox != null)
         {
-            //TODO Delete selectedBox
+            Object.Destroy(_selectedBox.gameObject);
+            _selectedBox = null;
         }
     }
 }

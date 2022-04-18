@@ -5,7 +5,7 @@ public sealed class BoxView : MonoBehaviour
     [SerializeField]
     private Renderer _renderer;
     [SerializeField]
-    private Color _ghostColor = new Color(0.1f, 0.6f, 1f, 0.1f);
+    private Color _ghostColor;
     [SerializeField]
     private LayerMask _layer;
 
