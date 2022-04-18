@@ -5,7 +5,7 @@ public sealed class BoxView : MonoBehaviour
     [SerializeField]
     private Renderer _renderer;
     [SerializeField]
-    private Color _ghostColor = new Color(0.1f, 0.6f, 1f, 0.1f);
+    private Color _ghostColor;
     [SerializeField]
     private LayerMask _layer;
 
@@ -13,6 +13,7 @@ public sealed class BoxView : MonoBehaviour
     public Color GhostColor => _ghostColor;
     public LayerMask Layer => _layer;
     public bool IsCollised { get; private set; }
+    public bool IsRotated { get; set; } = false;
     public Vector3 Size { get; set; }
 
 
