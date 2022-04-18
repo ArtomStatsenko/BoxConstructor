@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
+using System;
+using Object = UnityEngine.Object;
 
 public sealed class BoxController
 {
-    private const string FIRE_1 = "Fire1";
+    public Action<bool> OnEditModeEvent;
+
+    private const string BUTTON = "Fire1";
     private const float GAP = 0.05f;
+    private const float UI_PROPORTION = 0.125f;
 
     private BoxModel _model;
     private BoxView _selectedBox;
@@ -33,6 +38,8 @@ public sealed class BoxController
         DeleteSelectedBox();
         CreateNewBox();
         SetSelectedBoxGhost(true);
+
+        OnEditModeEvent?.Invoke(true);
     }
 
     private void CreateNewBox()
@@ -82,78 +89,87 @@ public sealed class BoxController
 
     public void Update()
     {
-        if (Input.GetButtonDown(FIRE_1))
-        {
-            _selectedBox = SelectBox();
+        Vector3 mousePosition = Input.mousePosition;
+        Ray ray = _camera.ScreenPointToRay(mousePosition);
 
-            if (_selectedBox == null)
+        if (mousePosition.y < Screen.height * UI_PROPORTION)
+        {
+            return;
+        }
+
+        if (Input.GetButtonDown(BUTTON))
+        {
+            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, _layer.value))
             {
                 CompleteEdit();
+
+                if (hit.collider.transform.TryGetComponent(out BoxView view))
+                {
+                    SelectBox(view);
+                }
             }
         }
 
         if (_selectedBox != null)
         {
-            if (Input.GetButton(FIRE_1))
+            if (Input.GetButton(BUTTON))
             {
-                MoveBox();
+                MoveBox(mousePosition);
             }
-            //if (_isValidPosition && Input.GetButtonUp(FIRE_1))
-            //{
-            //    SetGhost(false);
-            //    _selectedBox = null;
-            //}
         }
     }
 
-    private void CompleteEdit()
+    private void MoveBox(Vector3 mousePosition)
     {
+        Vector3 worldPosition = _camera.ScreenToWorldPoint(mousePosition);
+        float x = Mathf.Round(worldPosition.x / _step) * _step;
+        float z = Mathf.Round(worldPosition.z / _step) * _step;
+        _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
+
+        CheckValidPosition(x, z);
+    }
+
+    private void CheckValidPosition(float x, float z)
+    {
+        _isValidPosition = true;
+        if (x < -_xBorder || x > _xBorder || z < -_zBorder || z > _zBorder)
+        {
+            _isValidPosition = false;
+        }
+        if (_selectedBox.IsCollised)
+        {
+            _isValidPosition = false;
+        }
+    }
+
+    private void SelectBox(BoxView view)
+    {
+        _selectedBox = view;
+        _size = _selectedBox.Size;
+        SetBorders();
+        SetSelectedBoxGhost(true);
+
+        OnEditModeEvent?.Invoke(true);
+    }
+
+    public void CompleteEdit()
+    {
+        if (_selectedBox == null)
+        {
+            return;
+        }
+
+        float x = _selectedBox.transform.position.x;
+        float z = _selectedBox.transform.position.z;
+        CheckValidPosition(x, z);
+
         if (_isValidPosition)
         {
             SetSelectedBoxGhost(false);
             _selectedBox = null;
+
+            OnEditModeEvent?.Invoke(false);
         }
-    }
-
-    private void MoveBox()
-    {
-        Plane plane = new Plane(Vector3.up, Vector3.zero);
-        Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-
-        if (plane.Raycast(ray, out float position))
-        {
-            Vector3 worldPosition = ray.GetPoint(position);
-            float x = Mathf.Round(worldPosition.x / _step) * _step;
-            float z = Mathf.Round(worldPosition.z / _step) * _step;
-            _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
-
-            _isValidPosition = true;
-            if (x < -_xBorder || x > _xBorder || z < -_zBorder || z > _zBorder)
-            {
-                _isValidPosition = false;
-            }
-            if (_selectedBox.IsCollised)
-            {
-                _isValidPosition = false;
-            }
-        }
-    }
-
-    private BoxView SelectBox()
-    {
-        Vector3 mousePosition = Input.mousePosition;
-        Ray ray = _camera.ScreenPointToRay(mousePosition);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, _layer.value))
-        {
-            GameObject selectedBoxObject = hit.collider.gameObject;
-            _size = _selectedBox.Size;
-            SetBorders();
-            SetSelectedBoxGhost(true);
-            return selectedBoxObject.transform.GetComponent<BoxView>();
-        }
-
-        return null;
     }
 
     public void RotateSelectedBox()
@@ -172,6 +188,8 @@ public sealed class BoxController
         {
             Object.Destroy(_selectedBox.gameObject);
             _selectedBox = null;
+
+            OnEditModeEvent?.Invoke(false);
         }
     }
 }
