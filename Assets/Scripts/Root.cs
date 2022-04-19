@@ -13,9 +13,10 @@ public sealed class Root : MonoBehaviour
     private BoxView _boxPrefab;
     [SerializeField]
     private GridModel _gridModel;
+    [SerializeField]
+    private BoxExample _boxExample;
 
     private BoxController _boxController;
-
     private Camera _camera;
     private Vector3 _gridSize = Vector3.one;
 
@@ -40,6 +41,7 @@ public sealed class Root : MonoBehaviour
         _ui.OnDeleteButtonClick += _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick += _boxController.CompleteEdit;
         _ui.OnSliderValueChanged += _boxController.SetStepValue;
+        _ui.OnInputFieldValueChanged += _boxExample.SetSize;
         _boxController.OnEditModeEvent += _ui.SetEditMode;
     }
 
@@ -50,6 +52,7 @@ public sealed class Root : MonoBehaviour
         _ui.OnDeleteButtonClick -= _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick -= _boxController.CompleteEdit;
         _ui.OnSliderValueChanged -= _boxController.SetStepValue;
+        _ui.OnInputFieldValueChanged -= _boxExample.SetSize;
         _boxController.OnEditModeEvent -= _ui.SetEditMode;
     }
 }
