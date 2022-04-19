@@ -28,8 +28,6 @@ public sealed class UI : MonoBehaviour
     [SerializeField]
     private InputField _heightInputField;
 
-    private float _sliderScale = 10f;
-
     private void OnEnable()
     {
         _createButton.onClick.AddListener(CreateBox);
@@ -90,7 +88,7 @@ public sealed class UI : MonoBehaviour
 
     private void SensitivityValueChanged(float value)
     {
-        OnSliderValueChanged?.Invoke(value / _sliderScale);
+        OnSliderValueChanged?.Invoke(value);
     }
 
     private void LengthValueChanged(string input)

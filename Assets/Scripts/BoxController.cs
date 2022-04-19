@@ -8,6 +8,7 @@ public sealed class BoxController
 
     private const string BUTTON = "Fire1";
     private const float GAP = 0.05f;
+    private const float SENSITIVITY_SCALE = 10f;
 
     private BoxModel _model;
     private BoxView _selectedBox;
@@ -40,12 +41,10 @@ public sealed class BoxController
         {
             MoveBox(mousePosition);
         }
-
         if (Input.GetButtonDown(BUTTON))
         {
             SelectBox(mousePosition);
         }
-
         if (Input.GetButtonUp(BUTTON))
         {
             _isMoving = false;
@@ -190,6 +189,6 @@ public sealed class BoxController
 
     public void SetStepValue(float value)
     {
-        _step = value;
+        _step = value / SENSITIVITY_SCALE;
     }
 }

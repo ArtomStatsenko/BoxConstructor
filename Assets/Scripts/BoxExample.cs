@@ -8,19 +8,26 @@ public sealed class BoxExample : MonoBehaviour
     [SerializeField]
     private BoxModel _model;
 
+    private void Start()
+    {
+        transform.localScale = _model.Size;
+    }
+
     public void SetSize(Size size, float value)
     {
         switch (size)
         {
             case Size.Lenght:
-                transform.localScale = transform.localScale.Change(x: value);
+                _model.Length = value;
+                break;            
+            case Size.Height:
+                _model.Height = value;
                 break;
             case Size.Width:
-                transform.localScale = transform.localScale.Change(z: value);
-                break;
-            case Size.Height:
-                transform.localScale = transform.localScale.Change(y: value);
+                _model.Width = value;
                 break;
         }
+
+        transform.localScale = _model.Size;
     }
 }
