@@ -9,6 +9,7 @@ public sealed class UI : MonoBehaviour
     public Action OnDeleteButtonClick;
     public Action OnAcceptButtonClick;
     public Action<float> OnSliderValueChanged;
+    public Action<Vector3> OnInputFieldValueChanged;
 
     [SerializeField]
     private Button _createButton;

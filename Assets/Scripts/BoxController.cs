@@ -8,7 +8,6 @@ public sealed class BoxController
 
     private const string BUTTON = "Fire1";
     private const float GAP = 0.05f;
-    private const float UI_PROPORTION = 0.125f;
 
     private BoxModel _model;
     private BoxView _selectedBox;
@@ -23,6 +22,7 @@ public sealed class BoxController
     private float _zBorder;
     private float _step;
     private bool _isValidPosition;
+    private bool _isMoving;
 
     public BoxController(BoxModel model, BoxView prefab, float step, Vector3 gridSize, Camera camera)
     {
@@ -92,30 +92,27 @@ public sealed class BoxController
         Vector3 mousePosition = Input.mousePosition;
         Ray ray = _camera.ScreenPointToRay(mousePosition);
 
-        if (mousePosition.y < Screen.height * UI_PROPORTION || mousePosition.y > Screen.height * (1 - UI_PROPORTION)) // ??
-        {
-            return;
-        }
-
         if (Input.GetButtonDown(BUTTON))
         {
             if (Physics.Raycast(ray, out RaycastHit hit, 1000f, _layer.value))
             {
-                CompleteEdit();
-
                 if (hit.collider.transform.TryGetComponent(out BoxView view))
                 {
+                    CompleteEdit();
                     SelectBox(view);
+                    _isMoving = true;
                 }
             }
         }
 
-        if (_selectedBox != null)
+        if (Input.GetButtonUp(BUTTON))
         {
-            if (Input.GetButton(BUTTON))
-            {
-                MoveBox(mousePosition);
-            }
+            _isMoving = false;
+        }
+
+        if (_selectedBox != null && _isMoving)
+        {
+            MoveBox(mousePosition);
         }
     }
 
