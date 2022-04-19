@@ -39,6 +39,7 @@ public sealed class Root : MonoBehaviour
         _ui.OnRotateButtonClick += _boxController.RotateSelectedBox;
         _ui.OnDeleteButtonClick += _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick += _boxController.CompleteEdit;
+        _ui.OnSliderValueChanged += _boxController.SetStepValue;
         _boxController.OnEditModeEvent += _ui.SetEditMode;
     }
 
@@ -48,6 +49,7 @@ public sealed class Root : MonoBehaviour
         _ui.OnRotateButtonClick -= _boxController.RotateSelectedBox;
         _ui.OnDeleteButtonClick -= _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick -= _boxController.CompleteEdit;
+        _ui.OnSliderValueChanged -= _boxController.SetStepValue;
         _boxController.OnEditModeEvent -= _ui.SetEditMode;
     }
 }

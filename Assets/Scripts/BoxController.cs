@@ -92,7 +92,7 @@ public sealed class BoxController
         Vector3 mousePosition = Input.mousePosition;
         Ray ray = _camera.ScreenPointToRay(mousePosition);
 
-        if (mousePosition.y < Screen.height * UI_PROPORTION)
+        if (mousePosition.y < Screen.height * UI_PROPORTION || mousePosition.y > Screen.height * (1 - UI_PROPORTION)) // ??
         {
             return;
         }
@@ -191,5 +191,10 @@ public sealed class BoxController
 
             OnEditModeEvent?.Invoke(false);
         }
+    }
+
+    public void SetStepValue(float value)
+    {
+        _step = value;
     }
 }
