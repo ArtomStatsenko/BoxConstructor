@@ -21,7 +21,6 @@ public sealed class BoxController
     private float _xBorder;
     private float _zBorder;
     private float _step;
-    private bool _isValidPosition;
     private bool _isMoving;
 
     public BoxController(BoxModel model, BoxView prefab, float step, Vector3 gridSize, Camera camera)
@@ -33,27 +32,85 @@ public sealed class BoxController
         _camera = camera;
     }
 
-    public void StartPlacingBox()
+    public void Update()
     {
-        DeleteSelectedBox();
-        CreateNewBox();
-        SetSelectedBoxGhost(true);
+        Vector3 mousePosition = Input.mousePosition;
 
-        OnEditModeEvent?.Invoke(true);
+        if (_selectedBox != null && _isMoving)
+        {
+            MoveBox(mousePosition);
+        }
+
+        if (Input.GetButtonDown(BUTTON))
+        {
+            SelectBox(mousePosition);
+        }
+
+        if (Input.GetButtonUp(BUTTON))
+        {
+            _isMoving = false;
+        }
     }
 
-    private void CreateNewBox()
+    private void MoveBox(Vector3 mousePosition)
     {
-        _selectedBox = Object.Instantiate(_prefab);
-        _ghostColor = _selectedBox.GhostColor;
-        _defaultColor = _selectedBox.Renderer.material.color;
-        _layer = _selectedBox.Layer;
-        _size = _model.Size;
-        _selectedBox.Size = _size;
-        _selectedBox.transform.localScale = _size - Vector3.one * GAP;
-        _selectedBox.transform.position = _selectedBox.transform.position.Change(y: _size.y * 0.5f);
-        _selectedBox.IsRotated = false;
-        SetBorders();
+        Vector3 worldPosition = _camera.ScreenToWorldPoint(mousePosition);
+        float x = Mathf.Round(worldPosition.x / _step) * _step;
+        float z = Mathf.Round(worldPosition.z / _step) * _step;
+        _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
+    }
+
+    private void SelectBox(Vector3 mousePosition)
+    {
+        Ray ray = _camera.ScreenPointToRay(mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, _layer.value))
+        {
+            if (hit.collider.transform.TryGetComponent(out BoxView view))
+            {
+                CompleteEdit();
+                _selectedBox = view;
+                _size = _selectedBox.Size;
+                SetBorders();
+                SetSelectedBoxGhost(true);
+                _isMoving = true;
+
+                OnEditModeEvent?.Invoke(true);
+            }
+        }        
+    }
+
+    public void CompleteEdit()
+    {
+        if (_selectedBox == null)
+        {
+            return;
+        }
+
+        float x = _selectedBox.transform.position.x;
+        float z = _selectedBox.transform.position.z;
+
+        if (IsValidPosition(x, z))
+        {
+            SetSelectedBoxGhost(false);
+            _selectedBox = null;
+
+            OnEditModeEvent?.Invoke(false);
+        }
+    }
+
+    private bool IsValidPosition(float x, float z)
+    {
+        if (x < -_xBorder || x > _xBorder || z < -_zBorder || z > _zBorder)
+        {
+            return false;
+        }
+
+        if (_selectedBox.IsCollised)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private void SetBorders()
@@ -87,86 +144,27 @@ public sealed class BoxController
         }
     }
 
-    public void Update()
+    public void StartPlacingBox()
     {
-        Vector3 mousePosition = Input.mousePosition;
-        Ray ray = _camera.ScreenPointToRay(mousePosition);
-
-        if (Input.GetButtonDown(BUTTON))
-        {
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f, _layer.value))
-            {
-                if (hit.collider.transform.TryGetComponent(out BoxView view))
-                {
-                    CompleteEdit();
-                    SelectBox(view);
-                    _isMoving = true;
-                }
-            }
-        }
-
-        if (Input.GetButtonUp(BUTTON))
-        {
-            _isMoving = false;
-        }
-
-        if (_selectedBox != null && _isMoving)
-        {
-            MoveBox(mousePosition);
-        }
-    }
-
-    private void MoveBox(Vector3 mousePosition)
-    {
-        Vector3 worldPosition = _camera.ScreenToWorldPoint(mousePosition);
-        float x = Mathf.Round(worldPosition.x / _step) * _step;
-        float z = Mathf.Round(worldPosition.z / _step) * _step;
-        _selectedBox.transform.position = _selectedBox.transform.position.Change(x: x, z: z);
-
-        CheckValidPosition(x, z);
-    }
-
-    private void CheckValidPosition(float x, float z)
-    {
-        _isValidPosition = true;
-        if (x < -_xBorder || x > _xBorder || z < -_zBorder || z > _zBorder)
-        {
-            _isValidPosition = false;
-        }
-        if (_selectedBox.IsCollised)
-        {
-            _isValidPosition = false;
-        }
-    }
-
-    private void SelectBox(BoxView view)
-    {
-        _selectedBox = view;
-        _size = _selectedBox.Size;
-        SetBorders();
+        DeleteSelectedBox();
+        CreateNewBox();
         SetSelectedBoxGhost(true);
 
         OnEditModeEvent?.Invoke(true);
     }
 
-    public void CompleteEdit()
+    private void CreateNewBox()
     {
-        if (_selectedBox == null)
-        {
-            return;
-        }
-
-        float x = _selectedBox.transform.position.x;
-        float z = _selectedBox.transform.position.z;
-        CheckValidPosition(x, z);
-
-        if (_isValidPosition)
-        {
-            SetSelectedBoxGhost(false);
-            _selectedBox = null;
-
-            OnEditModeEvent?.Invoke(false);
-        }
+        _selectedBox = Object.Instantiate(_prefab);
+        _ghostColor = _selectedBox.GhostColor;
+        _defaultColor = _selectedBox.Renderer.material.color;
+        _layer = _selectedBox.Layer;
+        _size = _model.Size;
+        _selectedBox.Size = _size;
+        _selectedBox.transform.localScale = _size - Vector3.one * GAP;
+        _selectedBox.transform.position = _selectedBox.transform.position.Change(y: _size.y * 0.5f);
+        _selectedBox.IsRotated = false;
+        SetBorders();
     }
 
     public void RotateSelectedBox()

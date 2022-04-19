@@ -5,6 +5,9 @@ public sealed class BoxExample : MonoBehaviour
 {
     public Action OnBoxClick;
 
+    [SerializeField]
+    private BoxModel _model;
+
     public void SetSize(Size size, float value)
     {
         switch (size)
