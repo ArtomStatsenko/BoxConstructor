@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class Root : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public sealed class Root : MonoBehaviour
     private GeneratorController _boxGenerator;
     private Camera _camera;
     private Vector3 _gridSize = Vector3.one;
+    private List<IUpdatable> _controllers = new List<IUpdatable>();
 
     private void Awake()
     {
@@ -26,20 +28,38 @@ public sealed class Root : MonoBehaviour
         _gridSize = _palleteView.transform.localScale.Change(x: _gridModel.Size.x, z: _gridModel.Size.y);
         _palleteView.transform.localScale = _gridSize;
 
-        _boxController = new BoxController(_boxModel, _boxPrefab, _gridSize, _camera);
-        _boxGenerator = new GeneratorController(_boxModel, _generatorView, _camera);
-
         _ui.SetEditMode(false);
         _ui.SetInputSizeValue(_boxModel.Size);
     }
 
     private void Update()
     {
-        _boxController.Update();
-        _boxGenerator.Update();
+        foreach (IUpdatable controller in _controllers)
+        {
+            controller.Update();
+        }
     }
 
     private void OnEnable()
+    {
+        Init();
+        Subscribe();
+    }
+    private void OnDisable()
+    {
+        Unsubscribe();
+        _controllers.Clear();
+    }
+
+    private void Init()
+    {
+        _boxController = new BoxController(_boxModel, _boxPrefab, _gridSize, _camera);
+        _boxGenerator = new GeneratorController(_boxModel, _generatorView, _camera);
+        _controllers.Add(_boxController);
+        _controllers.Add(_boxGenerator);
+    }
+
+    private void Subscribe()
     {
         _ui.OnRotateButtonClick += _boxController.RotateSelectedBox;
         _ui.OnDeleteButtonClick += _boxController.DeleteSelectedBox;
@@ -50,7 +70,7 @@ public sealed class Root : MonoBehaviour
         _boxGenerator.OnBoxClick += _boxController.CreateBox;
     }
 
-    private void OnDisable()
+    private void Unsubscribe()
     {
         _ui.OnRotateButtonClick -= _boxController.RotateSelectedBox;
         _ui.OnDeleteButtonClick -= _boxController.DeleteSelectedBox;
