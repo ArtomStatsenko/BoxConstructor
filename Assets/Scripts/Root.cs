@@ -28,6 +28,9 @@ public sealed class Root : MonoBehaviour
 
         _boxController = new BoxController(_boxModel, _boxPrefab, _gridSize, _camera);
         _boxGenerator = new GeneratorController(_boxModel, _generatorView, _camera);
+
+        _ui.SetEditMode(false);
+        _ui.SetInputSizeValue(_boxModel.Size);
     }
 
     private void Update()

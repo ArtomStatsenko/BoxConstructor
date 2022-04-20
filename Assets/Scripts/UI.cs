@@ -48,16 +48,18 @@ public sealed class UI : MonoBehaviour
 
     }
 
-    private void Start()
-    {
-        SetEditMode(false);
-    }
-
     public void SetEditMode(bool interactable)
     {
         _rotateButton.interactable = interactable;
         _deleteButton.interactable = interactable;
         _acceptButton.interactable = interactable;
+    }
+
+    public void SetInputSizeValue(Vector3 size)
+    {
+        _lengthInputField.text = size.x.ToString();
+        _widthInputField.text = size.z.ToString();
+        _heightInputField.text = size.y.ToString();
     }
 
     private void RotateBox()
