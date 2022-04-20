@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "GridModel", menuName = "Models/Grid", order = 1)]
-public sealed class GridModel : ScriptableObject
+[CreateAssetMenu(fileName = "PalleteModel", menuName = "Models/Pallete", order = 1)]
+public sealed class PalleteModel : ScriptableObject
 {
     [SerializeField]
     private float _length;
