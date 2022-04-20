@@ -9,9 +9,11 @@ public sealed class Root : MonoBehaviour
     [SerializeField]
     private BoxView _boxPrefab;
     [SerializeField]
-    private GridModel _gridModel;
+    private PalleteModel _gridModel;
     [SerializeField]
     private GeneratorView _generatorView;
+    [SerializeField]
+    private PalleteView _palleteView;
 
     private BoxController _boxController;
     private GeneratorController _boxGenerator;
@@ -21,8 +23,8 @@ public sealed class Root : MonoBehaviour
     private void Awake()
     {
         _camera = Camera.main;
-        _gridSize = transform.localScale.Change(x: _gridModel.Size.x, z: _gridModel.Size.y);
-        transform.localScale = _gridSize;
+        _gridSize = _palleteView.transform.localScale.Change(x: _gridModel.Size.x, z: _gridModel.Size.y);
+        _palleteView.transform.localScale = _gridSize;
 
         _boxController = new BoxController(_boxModel, _boxPrefab, _gridSize, _camera);
         _boxGenerator = new GeneratorController(_boxModel, _generatorView, _camera);
@@ -36,7 +38,6 @@ public sealed class Root : MonoBehaviour
 
     private void OnEnable()
     {
-        _ui.OnCreateButtonClick += _boxController.StartPlacingBox;
         _ui.OnRotateButtonClick += _boxController.RotateSelectedBox;
         _ui.OnDeleteButtonClick += _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick += _boxController.CompleteEdit;
@@ -48,7 +49,6 @@ public sealed class Root : MonoBehaviour
 
     private void OnDisable()
     {
-        _ui.OnCreateButtonClick -= _boxController.StartPlacingBox;
         _ui.OnRotateButtonClick -= _boxController.RotateSelectedBox;
         _ui.OnDeleteButtonClick -= _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick -= _boxController.CompleteEdit;

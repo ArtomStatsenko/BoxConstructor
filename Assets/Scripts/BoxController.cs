@@ -139,27 +139,11 @@ public sealed class BoxController : IUpdatable
         }
     }
 
-    public void CreateBox(Vector3 mousePosition)
-    {
-        //create?
-        //position?
-        _isMoving = true;
-
-        OnEditModeEvent?.Invoke(true);
-    }
-
-    public void StartPlacingBox()
+    public void CreateBox(Vector3 position)
     {
         DeleteSelectedBox();
-        CreateNewBox();
-        SetSelectedBoxGhost(true);
 
-        OnEditModeEvent?.Invoke(true);
-    }
-
-    private void CreateNewBox()
-    {
-        _selectedBox = Object.Instantiate(_prefab);
+        _selectedBox = Object.Instantiate(_prefab, position, Quaternion.identity);
         _ghostColor = _selectedBox.GhostColor;
         _defaultColor = _selectedBox.Renderer.material.color;
         _layer = _selectedBox.Layer;
@@ -169,6 +153,11 @@ public sealed class BoxController : IUpdatable
         _selectedBox.transform.position = _selectedBox.transform.position.Change(y: _selectedBox.Size.y * 0.5f);
         _selectedBox.IsRotated = false;
         SetBorders();
+
+        SetSelectedBoxGhost(true);
+        _isMoving = true;
+
+        OnEditModeEvent?.Invoke(true);
     }
 
     public void RotateSelectedBox()

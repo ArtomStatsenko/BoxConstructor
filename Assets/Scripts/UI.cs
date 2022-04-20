@@ -4,15 +4,12 @@ using UnityEngine.UI;
 
 public sealed class UI : MonoBehaviour
 {
-    public Action OnCreateButtonClick;
     public Action OnRotateButtonClick; 
     public Action OnDeleteButtonClick;
     public Action OnAcceptButtonClick;
     public Action<float> OnSliderValueChanged;
     public Action<Size, float> OnInputFieldValueChanged;
 
-    [SerializeField]
-    private Button _createButton;
     [SerializeField]
     private Button _rotateButton;
     [SerializeField]
@@ -30,7 +27,6 @@ public sealed class UI : MonoBehaviour
 
     private void OnEnable()
     {
-        _createButton.onClick.AddListener(CreateBox);
         _rotateButton.onClick.AddListener(RotateBox);
         _deleteButton.onClick.AddListener(DeleteBox);
         _acceptButton.onClick.AddListener(Accept);
@@ -42,7 +38,6 @@ public sealed class UI : MonoBehaviour
 
     private void OnDisable()
     {
-        _createButton.onClick.RemoveAllListeners();
         _rotateButton.onClick.RemoveAllListeners();
         _deleteButton.onClick.RemoveAllListeners();
         _acceptButton.onClick.RemoveAllListeners();
@@ -58,17 +53,11 @@ public sealed class UI : MonoBehaviour
         SetEditMode(false);
     }
 
-    public void SetEditMode(bool enable)
+    public void SetEditMode(bool interactable)
     {
-        _createButton.gameObject.SetActive(!enable);
-        _rotateButton.gameObject.SetActive(enable);
-        _deleteButton.gameObject.SetActive(enable);
-        _acceptButton.gameObject.SetActive(enable);
-    }
-
-    private void CreateBox()
-    {
-        OnCreateButtonClick?.Invoke();
+        _rotateButton.interactable = interactable;
+        _deleteButton.interactable = interactable;
+        _acceptButton.interactable = interactable;
     }
 
     private void RotateBox()

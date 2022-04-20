@@ -30,7 +30,8 @@ public sealed class GeneratorController : IUpdatable
             {
                 if (hit.collider.transform.TryGetComponent(out GeneratorView view))
                 {
-                    OnBoxClick?.Invoke(mousePosition);
+                    Vector3 worldPosition = _camera.ScreenToWorldPoint(mousePosition);
+                    OnBoxClick?.Invoke(worldPosition);
                 }
             }
         }
