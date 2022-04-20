@@ -5,9 +5,6 @@ public sealed class Root : MonoBehaviour
     [SerializeField]
     private UI _ui;
     [SerializeField]
-    [Range(0.1f, 1.0f)]
-    private float _step;
-    [SerializeField]
     private BoxModel _boxModel;
     [SerializeField]
     private BoxView _boxPrefab;
@@ -26,7 +23,7 @@ public sealed class Root : MonoBehaviour
         _gridSize = transform.localScale.Change(x: _gridModel.Size.x, z: _gridModel.Size.y);
         transform.localScale = _gridSize;
 
-        _boxController = new BoxController(_boxModel, _boxPrefab, _step, _gridSize, _camera);
+        _boxController = new BoxController(_boxModel, _boxPrefab, _gridSize, _camera);
     }
 
     private void Update()

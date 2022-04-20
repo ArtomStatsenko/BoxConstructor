@@ -2,7 +2,7 @@
 using System;
 using Object = UnityEngine.Object;
 
-public sealed class BoxController
+public sealed class BoxController : IUpdatable
 {
     public Action<bool> OnEditModeEvent;
 
@@ -21,14 +21,13 @@ public sealed class BoxController
     private Color _defaultColor;
     private float _xBorder;
     private float _zBorder;
-    private float _step;
+    private float _step = 0.5f;
     private bool _isMoving;
 
-    public BoxController(BoxModel model, BoxView prefab, float step, Vector3 gridSize, Camera camera)
+    public BoxController(BoxModel model, BoxView prefab, Vector3 gridSize, Camera camera)
     {
         _model = model;
         _prefab = prefab;
-        _step = step;
         _gridSize = gridSize;
         _camera = camera;
     }
