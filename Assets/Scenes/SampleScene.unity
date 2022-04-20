@@ -281,6 +281,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 42738030}
   m_CullTransparentMesh: 1
+--- !u!114 &73888204 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5319632919997103729, guid: 479a2ba20fbe2a940b6264ffca75de6d, type: 3}
+  m_PrefabInstance: {fileID: 469274637102801244}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bda601796e9a8f4fbb57b65605bad92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &232347690
 GameObject:
   m_ObjectHideFlags: 0
@@ -2129,11 +2140,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 613825160}
-  _step: 0.5
   _boxModel: {fileID: 11400000, guid: 9bc538c2ae8c713408f67fd0534f36a6, type: 2}
   _boxPrefab: {fileID: 7460475592097059439, guid: b3ed41312e6ebbb4ab8dcdc18369ac11, type: 3}
   _gridModel: {fileID: 11400000, guid: 1d26f5094acac2d44924be159e17b9aa, type: 2}
-  _boxExample: {fileID: 1889568215}
+  _generatorView: {fileID: 73888204}
 --- !u!1 &1296260510
 GameObject:
   m_ObjectHideFlags: 0
@@ -2577,17 +2587,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1889568215 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3241266341891000375, guid: 479a2ba20fbe2a940b6264ffca75de6d, type: 3}
-  m_PrefabInstance: {fileID: 469274637102801244}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d14e18d5f781f7244a326f963cbbce3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1933078107
 GameObject:
   m_ObjectHideFlags: 0
@@ -3222,10 +3221,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3241266341891000375, guid: 479a2ba20fbe2a940b6264ffca75de6d, type: 3}
-      propertyPath: _model
-      value: 
-      objectReference: {fileID: 11400000, guid: 9bc538c2ae8c713408f67fd0534f36a6, type: 2}
     - target: {fileID: 7629217972712635267, guid: 479a2ba20fbe2a940b6264ffca75de6d, type: 3}
       propertyPath: m_RootOrder
       value: 5

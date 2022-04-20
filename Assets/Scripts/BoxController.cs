@@ -6,7 +6,6 @@ public sealed class BoxController : IUpdatable
 {
     public Action<bool> OnEditModeEvent;
 
-    private const string BUTTON = "Fire1";
     private const float GAP = 0.05f;
     private const float SENSITIVITY_SCALE = 10f;
 
@@ -16,7 +15,6 @@ public sealed class BoxController : IUpdatable
     private Camera _camera;
     private LayerMask _layer;
     private Vector3 _gridSize;
-    private Vector3 _size;
     private Color _ghostColor;
     private Color _defaultColor;
     private float _xBorder;
@@ -40,11 +38,11 @@ public sealed class BoxController : IUpdatable
         {
             MoveBox(mousePosition);
         }
-        if (Input.GetButtonDown(BUTTON))
+        if (Input.GetButtonDown(InputManager.BUTTON))
         {
             SelectBox(mousePosition);
         }
-        if (Input.GetButtonUp(BUTTON))
+        if (Input.GetButtonUp(InputManager.BUTTON))
         {
             _isMoving = false;
         }
@@ -67,7 +65,6 @@ public sealed class BoxController : IUpdatable
             {
                 CompleteEdit();
                 _selectedBox = view;
-                _size = _selectedBox.Size;
                 SetBorders();
                 SetSelectedBoxGhost(true);
                 _isMoving = true;
@@ -115,13 +112,13 @@ public sealed class BoxController : IUpdatable
     {
         if (_selectedBox.IsRotated)
         {
-            _xBorder = (_gridSize.x - _size.z) * 0.5f;
-            _zBorder = (_gridSize.z - _size.x) * 0.5f;
+            _xBorder = (_gridSize.x - _selectedBox.Size.z) * 0.5f;
+            _zBorder = (_gridSize.z - _selectedBox.Size.x) * 0.5f;
         }
         else
         {
-            _xBorder = (_gridSize.x - _size.x) * 0.5f;
-            _zBorder = (_gridSize.z - _size.z) * 0.5f;
+            _xBorder = (_gridSize.x - _selectedBox.Size.x) * 0.5f;
+            _zBorder = (_gridSize.z - _selectedBox.Size.z) * 0.5f;
         }
     }
 
@@ -142,6 +139,15 @@ public sealed class BoxController : IUpdatable
         }
     }
 
+    public void CreateBox(Vector3 mousePosition)
+    {
+        //create?
+        //position?
+        _isMoving = true;
+
+        OnEditModeEvent?.Invoke(true);
+    }
+
     public void StartPlacingBox()
     {
         DeleteSelectedBox();
@@ -157,10 +163,10 @@ public sealed class BoxController : IUpdatable
         _ghostColor = _selectedBox.GhostColor;
         _defaultColor = _selectedBox.Renderer.material.color;
         _layer = _selectedBox.Layer;
-        _size = _model.Size;
-        _selectedBox.Size = _size;
-        _selectedBox.transform.localScale = _size - Vector3.one * GAP;
-        _selectedBox.transform.position = _selectedBox.transform.position.Change(y: _size.y * 0.5f);
+
+        _selectedBox.Size = _model.Size;
+        _selectedBox.transform.localScale = _selectedBox.Size - Vector3.one * GAP;
+        _selectedBox.transform.position = _selectedBox.transform.position.Change(y: _selectedBox.Size.y * 0.5f);
         _selectedBox.IsRotated = false;
         SetBorders();
     }

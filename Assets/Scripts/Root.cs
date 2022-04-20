@@ -11,9 +11,10 @@ public sealed class Root : MonoBehaviour
     [SerializeField]
     private GridModel _gridModel;
     [SerializeField]
-    private BoxExample _boxExample;
+    private GeneratorView _generatorView;
 
     private BoxController _boxController;
+    private GeneratorController _boxGenerator;
     private Camera _camera;
     private Vector3 _gridSize = Vector3.one;
 
@@ -24,11 +25,13 @@ public sealed class Root : MonoBehaviour
         transform.localScale = _gridSize;
 
         _boxController = new BoxController(_boxModel, _boxPrefab, _gridSize, _camera);
+        _boxGenerator = new GeneratorController(_boxModel, _generatorView, _camera);
     }
 
     private void Update()
     {
         _boxController.Update();
+        _boxGenerator.Update();
     }
 
     private void OnEnable()
@@ -38,8 +41,9 @@ public sealed class Root : MonoBehaviour
         _ui.OnDeleteButtonClick += _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick += _boxController.CompleteEdit;
         _ui.OnSliderValueChanged += _boxController.SetStepValue;
-        _ui.OnInputFieldValueChanged += _boxExample.SetSize;
+        _ui.OnInputFieldValueChanged += _boxGenerator.SetSize;
         _boxController.OnEditModeEvent += _ui.SetEditMode;
+        _boxGenerator.OnBoxClick += _boxController.CreateBox;
     }
 
     private void OnDisable()
@@ -49,7 +53,8 @@ public sealed class Root : MonoBehaviour
         _ui.OnDeleteButtonClick -= _boxController.DeleteSelectedBox;
         _ui.OnAcceptButtonClick -= _boxController.CompleteEdit;
         _ui.OnSliderValueChanged -= _boxController.SetStepValue;
-        _ui.OnInputFieldValueChanged -= _boxExample.SetSize;
+        _ui.OnInputFieldValueChanged -= _boxGenerator.SetSize;
         _boxController.OnEditModeEvent -= _ui.SetEditMode;
+        _boxGenerator.OnBoxClick -= _boxController.CreateBox;
     }
 }
